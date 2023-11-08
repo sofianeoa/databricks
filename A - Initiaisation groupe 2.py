@@ -14,3 +14,7 @@ data = pd.read_csv(file_path)
 
 # Afficher les premières lignes du DataFrame
 print(data.head())
+
+# COMMAND ----------
+
+print("hello")
