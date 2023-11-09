@@ -4,8 +4,8 @@ import pandas as pd
 # COMMAND ----------
 
 # Lecture de la table
-data = spark.sql("SELECT * FROM train_prod")
-data_val = spark.sql("SELECT * FROM test_prod")
+data = spark.sql("SELECT * FROM train_dev")
+data_val = spark.sql("SELECT * FROM test_dev")
 
 display(data)
 
@@ -102,3 +102,19 @@ data_val = data_val.withColumnRenamed('N°DPE', 'num_dpe')\
                    .withColumnRenamed('Qualité_isolation_enveloppe', 'qualite_isolation_enveloppe')\
                    .withColumnRenamed('Qualité_isolation_plancher_bas', 'qualite_isolation_plancher_bas')
 
+
+# COMMAND ----------
+
+format = "parquet"
+data.write.mode("ignore").format(format).saveAsTable("data_prod")
+data_val.write.mode("ignore").format(format).saveAsTable("data_val_prod")
+
+
+
+# COMMAND ----------
+
+# Lecture de la table
+data = spark.sql("SELECT * FROM data_prod")
+data_val = spark.sql("SELECT * FROM data_val_prod")
+
+display(data)

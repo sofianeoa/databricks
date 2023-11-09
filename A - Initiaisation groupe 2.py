@@ -26,15 +26,15 @@ display(df_val)
 # COMMAND ----------
 
 format = "parquet"
-df_test.write.mode("ignore").format(format).saveAsTable("test_prod")
-df_train.write.mode("ignore").format(format).saveAsTable("train_prod")
-df_val.write.mode("ignore").format(format).saveAsTable("val_prod")
+df_test.write.mode("ignore").format(format).saveAsTable("test_prex")
+df_train.write.mode("ignore").format(format).saveAsTable("train_prex")
+df_val.write.mode("ignore").format(format).saveAsTable("val_prex")
 
 
 # COMMAND ----------
 
 # Lecture de la table
-test = spark.sql("SELECT * FROM test_prod")
+test = spark.sql("SELECT * FROM test_prex")
 
 # Affichage du DataFrame
 display(test)
