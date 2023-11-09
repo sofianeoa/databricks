@@ -4,8 +4,8 @@ import pandas as pd
 # COMMAND ----------
 
 # Lecture de la table
-data = spark.sql("SELECT * FROM train_dev")
-data_val = spark.sql("SELECT * FROM test_dev")
+data = spark.sql("SELECT * FROM train_prex")
+data_val = spark.sql("SELECT * FROM test_prex")
 
 display(data)
 
