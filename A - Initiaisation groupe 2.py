@@ -16,70 +16,18 @@ except Exception as e:
 
 # COMMAND ----------
 
-files = dbutils.fs.ls("/mnt/mntgrp2")
-for file in files:
-    # Vérifiez si le fichier est un fichier CSV par exemple
-    if file.name.endswith('.csv'):
-        # Lecture du fichier CSV dans un DataFrame Spark
-        df = spark.read.option("header", "true").csv(file.path)
-
-        # Enregistrement du DataFrame en tant que table
-        df.write.table(f"dbfs:/mnt/mntgrp2/{file.name[:-4]}_tbl")
-
-        # Affichage du DataFrame
-        display(df)
-
-        # Changement des noms des colonnes
-        new_cols = []
-        for col in df.columns:
-            new_col = col.replaceAll("[ ,;{}()\n\t=]+", "")
-            new_cols.append(new_col)
-
-        # Mise à jour des noms des colonnes
-        df.columns = new_cols
-
-        # Affichage du DataFrame avec les nouveaux noms de colonnes
-        display(df)
+df = spark.read.option("header", "true").csv("/mnt/mntgrp2/test.csv")
+display(df)
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
-
-
-file_list = dbutils.fs.ls("/mnt/mntgrp2")
-
-for file in file_list:
-    if file.name.endswith('.csv'):
-        # Lecture du fichier CSV dans un DataFrame Spark
-        df = spark.read.option("header", "true").csv(file.path)
-
-        # Déduire le nom de la table à partir du nom du fichier
-        table_name = file.name.replace('.csv', '')
-
-        # Enregistrer le DataFrame en tant que table
-        df.write.format("parquet").saveAsTable(table_name)
-
-spark.stop()
+format = "parquet"
+df.write.saveAsTable("test_prod", format=format)
 
 # COMMAND ----------
 
-file_list = dbutils.fs.ls("/mnt/mntgrp2")
+# Lecture de la table
+df = spark.sql("SELECT * FROM test_prod")
 
-for file in file_list:
-    if file.name.endswith('.csv'):
-        # Déduire le nom de la table à partir du nom du fichier
-        table_name = file.name.replace('.csv', '')
-
-        # Supprimer la table si elle existe
-        spark.sql(f"DROP TABLE IF EXISTS {table_name}")
-
-        # Lecture du fichier CSV dans un DataFrame Spark
-        df = spark.read.option("header", "true").csv(file.path)
-
-        # Enregistrer le DataFrame en tant que table
-        df.write.format("parquet").saveAsTable(table_name)
-
-tables = spark.sql("SHOW TABLES")
-tables.show()
-
-spark.stop()
+# Affichage du DataFrame
+display(df)
