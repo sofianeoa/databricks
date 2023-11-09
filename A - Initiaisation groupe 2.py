@@ -16,18 +16,25 @@ except Exception as e:
 
 # COMMAND ----------
 
-df = spark.read.option("header", "true").csv("/mnt/mntgrp2/test.csv")
-display(df)
+df_test = spark.read.option("header", "true").csv("/mnt/mntgrp2/test.csv")
+df_train = spark.read.option("header", "true").csv("/mnt/mntgrp2/train.csv")
+df_val= spark.read.option("header", "true").csv("/mnt/mntgrp2/val.csv")
+display(df_test)
+display(df_train )
+display(df_val)
 
 # COMMAND ----------
 
 format = "parquet"
-df.write.saveAsTable("test_prod", format=format)
+df_test.write.mode("ignore").format(format).saveAsTable("test_prod")
+df_train.write.mode("ignore").format(format).saveAsTable("train_prod")
+df_val.write.mode("ignore").format(format).saveAsTable("val_prod")
+
 
 # COMMAND ----------
 
 # Lecture de la table
-df = spark.sql("SELECT * FROM test_prod")
+test = spark.sql("SELECT * FROM test_prod")
 
 # Affichage du DataFrame
-display(df)
+display(test)
