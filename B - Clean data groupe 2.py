@@ -1,10 +1,11 @@
 # Databricks notebook source
 import pandas as pd
+from pyspark.sql import functions as F
+
 
 # COMMAND ----------
 
-# Lecture de la table
-data = spark.sql("SELECT * FROM train_prex_2")
+data = spark.sql("SELECT * FROM train_prex")
 data_val = spark.sql("SELECT * FROM test_prex")
 
 # COMMAND ----------
@@ -33,7 +34,6 @@ data_val = data_val.fillna(0)
 
 
 # COMMAND ----------
-
 
 
 for col_name in colonnes_a_transformer:
@@ -84,38 +84,38 @@ data_val.columns
 
 # COMMAND ----------
 
-# Conversion des colonnes en int pour le DataFrame 'data'
-data_int = data.withColumn("emission_ges_eclairage", data["emission_ges_eclairage"].cast(IntegerType()))\
-           .withColumn("conso_final_energie", data["conso_final_energie"].cast(IntegerType()))\
-           .withColumn("etiquette_ges", data["etiquette_ges"].cast(IntegerType()))\
-           .withColumn("conso_final", data["conso_final"].cast(IntegerType()))\
-           .withColumn("etiquette_dpe", data["etiquette_dpe"].cast(IntegerType()))\
-           .withColumn("qualite_isolation_enveloppe", data["qualite_isolation_enveloppe"].cast(IntegerType()))\
-           .withColumn("qualite_isolation_plancher_bas", data["qualite_isolation_plancher_bas"].cast(IntegerType()))
-
-# Conversion des colonnes en int pour le DataFrame 'data_val'
-data_val_int = data_val.withColumn("num_dpe", data_val["num_dpe"].cast(IntegerType()))\
-                   .withColumn("emission_ges_eclairage", data_val["emission_ges_eclairage"].cast(IntegerType()))\
-                   .withColumn("conso_final_energie", data_val["conso_final_energie"].cast(IntegerType()))\
-                   .withColumn("etiquette_ges", data_val["etiquette_ges"].cast(IntegerType()))\
-                   .withColumn("conso_final", data_val["conso_final"].cast(IntegerType()))\
-                   .withColumn("etiquette_dpe", data_val["etiquette_dpe"].cast(IntegerType()))\
-                   .withColumn("qualite_isolation_enveloppe", data_val["qualite_isolation_enveloppe"].cast(IntegerType()))\
-                   .withColumn("qualite_isolation_plancher_bas", data_val["qualite_isolation_plancher_bas"].cast(IntegerType()))
-
-
-# COMMAND ----------
+tables_et_dfs = {
+    "data_prod": data,
+    "data_val_prod": data_val
+}
 
 format = "parquet"
-data_int.write.mode("ignore").format(format).saveAsTable("data_prod_3")
-data_val_int.write.mode("ignore").format(format).saveAsTable("data_val_prod")
-
+# Parcourir chaque paire table-DataFrame
+for table, df in tables_et_dfs.items():
+    print(table)
+    # Vérifier si la table existe
+    if spark.catalog.tableExists(table):
+        # Supprimer la table si elle existe
+        spark.sql(f"DROP TABLE IF EXISTS {table}")
+    # Créer la nouvelle table à partir du DataFrame
+    df.write.mode("overwrite").format(format).saveAsTable(table)
 
 
 # COMMAND ----------
 
 # Lecture de la table
-data = spark.sql("SELECT * FROM data_prod_2")
-data_val = spark.sql("SELECT * FROM data_val_prod")
-data.printSchema()
-display(data)
+test = spark.sql("SELECT * FROM data_prod")
+test_val = spark.sql("SELECT * FROM data_val_prod")
+
+
+# COMMAND ----------
+
+tables = spark.catalog.listTables()
+
+
+# Afficher les noms des tables
+for table in tables:
+    print(table.name)
+# Supprimer chaque table
+#for table in tables:
+  #  spark.sql(f"DROP TABLE {table.name}")

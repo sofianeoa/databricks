@@ -16,13 +16,24 @@ except Exception as e:
 
 # COMMAND ----------
 
+spark.sql("CREATE DATABASE IF NOT EXISTS groupe2")
+spark.catalog.setCurrentDatabase("groupe2")
+
+# COMMAND ----------
+
+nom_base_de_donnees = spark.catalog.currentDatabase()
+# Afficher le nom de la base de données
+print(nom_base_de_donnees)
+
+# COMMAND ----------
+
 df_train = spark.read.option("header", "true").option("inferSchema", "true").csv("/mnt/mntgrp2/train.csv")
 
 
 # COMMAND ----------
 
 
-df_val= spark.read.option("header", "true").csv("/mnt/mntgrp2/val.csv")
+df_val= spark.read.option("header", "true").option("inferSchema", "true").csv("/mnt/mntgrp2/val.csv")
 
 # COMMAND ----------
 
@@ -42,6 +53,7 @@ format = "parquet"
 
 # Parcourir chaque paire table-DataFrame
 for table, df in tables_et_dfs.items():
+    print(table)
     # Vérifier si la table existe
     if spark.catalog.tableExists(table):
         # Supprimer la table si elle existe
@@ -53,6 +65,7 @@ for table, df in tables_et_dfs.items():
 # COMMAND ----------
 
 tables = spark.catalog.listTables()
+
 
 # Afficher les noms des tables
 for table in tables:
