@@ -4,10 +4,8 @@ import pandas as pd
 # COMMAND ----------
 
 # Lecture de la table
-data = spark.sql("SELECT * FROM train_prex")
+data = spark.sql("SELECT * FROM train_prex_2")
 data_val = spark.sql("SELECT * FROM test_prex")
-
-display(data)
 
 # COMMAND ----------
 
@@ -36,7 +34,7 @@ data_val = data_val.fillna(0)
 
 # COMMAND ----------
 
-from pyspark.sql import functions as F
+
 
 for col_name in colonnes_a_transformer:
     for key, value in correspondance.items():
@@ -86,35 +84,38 @@ data_val.columns
 
 # COMMAND ----------
 
-data = data.withColumnRenamed('Emission_GES_éclairage', 'emission_ges_eclairage')\
-           .withColumnRenamed('Conso_5_usages_é_finale_énergie_n°2', 'conso_final_energie')\
-           .withColumnRenamed('Etiquette_GES', 'etiquette_ges')\
-           .withColumnRenamed('Conso_5_usages_é_finale', 'conso_final')\
-           .withColumnRenamed('Etiquette_DPE', 'etiquette_dpe')\
-           .withColumnRenamed('Qualité_isolation_enveloppe', 'qualite_isolation_enveloppe')\
-           .withColumnRenamed('Qualité_isolation_plancher_bas', 'qualite_isolation_plancher_bas')
-data_val = data_val.withColumnRenamed('N°DPE', 'num_dpe')\
-                   .withColumnRenamed('Emission_GES_éclairage', 'emission_ges_eclairage')\
-                   .withColumnRenamed('Conso_5_usages_é_finale_énergie_n°2', 'conso_final_energie')\
-                   .withColumnRenamed('Etiquette_GES', 'etiquette_ges')\
-                   .withColumnRenamed('Conso_5_usages_é_finale', 'conso_final')\
-                   .withColumnRenamed('Etiquette_DPE', 'etiquette_dpe')\
-                   .withColumnRenamed('Qualité_isolation_enveloppe', 'qualite_isolation_enveloppe')\
-                   .withColumnRenamed('Qualité_isolation_plancher_bas', 'qualite_isolation_plancher_bas')
+# Conversion des colonnes en int pour le DataFrame 'data'
+data_int = data.withColumn("emission_ges_eclairage", data["emission_ges_eclairage"].cast(IntegerType()))\
+           .withColumn("conso_final_energie", data["conso_final_energie"].cast(IntegerType()))\
+           .withColumn("etiquette_ges", data["etiquette_ges"].cast(IntegerType()))\
+           .withColumn("conso_final", data["conso_final"].cast(IntegerType()))\
+           .withColumn("etiquette_dpe", data["etiquette_dpe"].cast(IntegerType()))\
+           .withColumn("qualite_isolation_enveloppe", data["qualite_isolation_enveloppe"].cast(IntegerType()))\
+           .withColumn("qualite_isolation_plancher_bas", data["qualite_isolation_plancher_bas"].cast(IntegerType()))
+
+# Conversion des colonnes en int pour le DataFrame 'data_val'
+data_val_int = data_val.withColumn("num_dpe", data_val["num_dpe"].cast(IntegerType()))\
+                   .withColumn("emission_ges_eclairage", data_val["emission_ges_eclairage"].cast(IntegerType()))\
+                   .withColumn("conso_final_energie", data_val["conso_final_energie"].cast(IntegerType()))\
+                   .withColumn("etiquette_ges", data_val["etiquette_ges"].cast(IntegerType()))\
+                   .withColumn("conso_final", data_val["conso_final"].cast(IntegerType()))\
+                   .withColumn("etiquette_dpe", data_val["etiquette_dpe"].cast(IntegerType()))\
+                   .withColumn("qualite_isolation_enveloppe", data_val["qualite_isolation_enveloppe"].cast(IntegerType()))\
+                   .withColumn("qualite_isolation_plancher_bas", data_val["qualite_isolation_plancher_bas"].cast(IntegerType()))
 
 
 # COMMAND ----------
 
 format = "parquet"
-data.write.mode("ignore").format(format).saveAsTable("data_prod")
-data_val.write.mode("ignore").format(format).saveAsTable("data_val_prod")
+data_int.write.mode("ignore").format(format).saveAsTable("data_prod_3")
+data_val_int.write.mode("ignore").format(format).saveAsTable("data_val_prod")
 
 
 
 # COMMAND ----------
 
 # Lecture de la table
-data = spark.sql("SELECT * FROM data_prod")
+data = spark.sql("SELECT * FROM data_prod_2")
 data_val = spark.sql("SELECT * FROM data_val_prod")
-
+data.printSchema()
 display(data)

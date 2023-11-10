@@ -19,7 +19,7 @@ string_columns_val = [item[0] for item in data_val.dtypes if item[1].startswith(
 
 # Conversion de chaque colonne string en float
 for column in string_columns:
-    data = data.withColumn(column, col(column).cast('float'))
+    data = data.withColumn(column, col(column).cast('int'))
 
 for column in string_columns_val:
     data_val = data_val.withColumn(column, col(column).cast('int'))
@@ -53,19 +53,11 @@ proportion_test = 0.2
 X_train, X_test = data.randomSplit([1 - proportion_test, proportion_test], seed=42)
 
 
+
 # COMMAND ----------
 
-import xgboost as xgb
-
-# Initialiser le modèle
+# Créez un modèle XGBoost
 model = xgb.XGBClassifier(objective='multi:softmax', num_class=7)
 
-# Entraîner le modèle
+# Entraînez le modèle sur l'ensemble d'apprentissage
 model.fit(X_train, y_train)
-
-# Évaluer le modèle
-predictions = model.predict(X_test)
-accuracy = accuracy_score(y_test, predictions)
-
-print(f"Précision du modèle : {accuracy}")
-
