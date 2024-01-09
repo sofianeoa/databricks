@@ -5,6 +5,8 @@ from pyspark.sql import functions as F
 
 # COMMAND ----------
 
+spark.sql(f"USE db_grp_2")
+
 data = spark.sql("SELECT * FROM train_prex")
 data_val = spark.sql("SELECT * FROM test_prex")
 
@@ -29,8 +31,8 @@ colonnes_a_transformer_val = ['Qualité_isolation_plancher_bas', 'Qualité_isola
 
 # COMMAND ----------
 
-data = data.fillna(0)
-data_val = data_val.fillna(0)
+data = data.na.fill(0)
+data_val = data_val.na.fill(0)
 
 
 # COMMAND ----------
@@ -49,30 +51,30 @@ for col_name in colonnes_a_transformer_val:
 
 # Liste des colonnes à supprimer de data
 columns_to_drop_data = [
-    'Unnamed: 0', 'N°DPE', 'Configuration_installation_chauffage_n°2', 'Type_générateur_froid', 
-    'Type_émetteur_installation_chauffage_n°2', 'Classe_altitude', 'Code_postal_(brut)', 
-    'Type_générateur_n°1_installation_n°2', 'Nom__commune_(Brut)', "Cage_d'escalier", 'Code_INSEE_(BAN)', 
-    'Description_générateur_chauffage_n°2_installation_n°2', 'N°_département_(BAN)', 'Surface_totale_capteurs_photovoltaïque', 
-    'Facteur_couverture_solaire_saisi', 'Facteur_couverture_solaire', 'Type_énergie_n°3', 
+    '_c0', '_no_DPE', 'Configuration_installation_chauffage__no_2', 'Type_générateur_froid', 
+    'Type_émetteur_installation_chauffage__no_2', 'Classe_altitude', 'Code_postal__brut_', 
+    'Type_générateur__no_1_installation__no_2', 'Nom__commune__Brut_', "Cage_d_escalier", 'Code_INSEE__BAN_', 
+    'Description_générateur_chauffage__no_2_installation__no_2', '_no__département__BAN_', 'Surface_totale_capteurs_photovoltaïque', 
+    'Facteur_couverture_solaire_saisi', 'Facteur_couverture_solaire', 'Type_énergie__no_3', 
     'Qualité_isolation_plancher_haut_toit_terrase', 'Qualité_isolation_murs', 'Qualité_isolation_plancher_haut_comble_perdu', 
     'Hauteur_sous-plafond', 'Qualité_isolation_plancher_haut_comble_aménagé', 'Qualité_isolation_menuiseries', 
     'Surface_habitable_immeuble', 'Surface_habitable_logement', 'Type_bâtiment', 'Conso_5_usages/m²_é_finale', 
-    'Conso_chauffage_dépensier_installation_chauffage_n°1', 'Surface_habitable_desservie_par_installation_ECS', 
-    'Coût_chauffage_énergie_n°2', 'Emission_GES_chauffage_énergie_n°2', 'Code_postal_(BAN)', 'Année_construction'
+    'Conso_chauffage_dépensier_installation_chauffage__no_1', 'Surface_habitable_desservie_par_installation_ECS', 
+    'Coût_chauffage_énergie__no_2', 'Emission_GES_chauffage_énergie__no_2', 'Code_postal__BAN_', 'Année_construction'
 ]
 
 # Supprimer les colonnes indésirables de data
 data = data.drop(*columns_to_drop_data)
 
 # Liste des colonnes à supprimer de data_val
-columns_to_drop_data_val = ['Configuration_installation_chauffage_n°2', 'Type_générateur_froid', 'Type_émetteur_installation_chauffage_n°2',
-                          'Classe_altitude', 'Code_postal_(brut)', 'Type_générateur_n°1_installation_n°2', 'Nom__commune_(Brut)',
-                          "Cage_d'escalier", 'Code_INSEE_(BAN)', 'Description_générateur_chauffage_n°2_installation_n°2', 'N°_département_(BAN)',
+columns_to_drop_data_val = ['_c0', 'Configuration_installation_chauffage__no_2', 'Type_générateur_froid', 'Type_émetteur_installation_chauffage__no_2',
+                          'Classe_altitude', 'Code_postal__brut_', 'Type_générateur__no_1_installation__no_2', 'Nom__commune__Brut_',
+                          "Cage_d_escalier", 'Code_INSEE__BAN_', 'Description_générateur_chauffage__no_2_installation__no_2', '_no__département__BAN_',
                           'Surface_totale_capteurs_photovoltaïque', 'Facteur_couverture_solaire_saisi', 'Facteur_couverture_solaire',
-                        'Type_énergie_n°3', 'Qualité_isolation_plancher_haut_toit_terrase', 'Qualité_isolation_murs','Qualité_isolation_plancher_haut_comble_perdu',
+                        'Type_énergie__no_3', 'Qualité_isolation_plancher_haut_toit_terrase', 'Qualité_isolation_murs','Qualité_isolation_plancher_haut_comble_perdu',
                         'Hauteur_sous-plafond', 'Qualité_isolation_plancher_haut_comble_aménagé', 'Qualité_isolation_menuiseries', 'Surface_habitable_immeuble', 'Surface_habitable_logement',
-                        'Type_bâtiment', 'Conso_5_usages/m²_é_finale', 'Conso_chauffage_dépensier_installation_chauffage_n°1', 'Surface_habitable_desservie_par_installation_ECS',
-                        'Coût_chauffage_énergie_n°2', 'Emission_GES_chauffage_énergie_n°2', 'Code_postal_(BAN)', 'Année_construction'
+                        'Type_bâtiment', 'Conso_5_usages/m²_é_finale', 'Conso_chauffage_dépensier_installation_chauffage__no_1', 'Surface_habitable_desservie_par_installation_ECS',
+                        'Coût_chauffage_énergie__no_2', 'Emission_GES_chauffage_énergie__no_2', 'Code_postal__BAN_', 'Année_construction'
 ]
 
 # Supprimer les colonnes indésirables de data_val
@@ -80,26 +82,63 @@ data_val = data_val.drop(*columns_to_drop_data_val)
 
 # COMMAND ----------
 
-data_val.columns
+# Renommer les colonnes dans le DataFrame 'data'
+data_6 = data.withColumnRenamed("Emission_GES_éclairage", "emission_ges_eclairage") \
+           .withColumnRenamed("Conso_5_usages_é_finale_énergie__no_2", "conso_final_energie") \
+           .withColumnRenamed("Etiquette_GES", "etiquette_ges") \
+           .withColumnRenamed("Conso_5_usages_é_finale", "conso_final") \
+           .withColumnRenamed("Etiquette_DPE", "etiquette_dpe") \
+           .withColumnRenamed("Qualité_isolation_enveloppe", "qualite_isolation_enveloppe") \
+           .withColumnRenamed("Qualité_isolation_plancher_bas", "qualite_isolation_plancher_bas")
+
+# Renommer les colonnes dans le DataFrame 'data_val'
+data_val_6 = data_val.withColumnRenamed("Emission_GES_éclairage", "emission_ges_eclairage") \
+                   .withColumnRenamed("Conso_5_usages_é_finale_énergie__no_2", "conso_final_energie") \
+                   .withColumnRenamed("Etiquette_GES", "etiquette_ges") \
+                   .withColumnRenamed("Conso_5_usages_é_finale", "conso_final") \
+                   .withColumnRenamed("Etiquette_DPE", "etiquette_dpe") \
+                   .withColumnRenamed("Qualité_isolation_enveloppe", "qualite_isolation_enveloppe") \
+                   .withColumnRenamed("Qualité_isolation_plancher_bas", "qualite_isolation_plancher_bas")
 
 # COMMAND ----------
 
+
+
 tables_et_dfs = {
-    "data_prod": data,
-    "data_val_prod": data_val
+    "data_prod": data_6,
+    "data_val_prod": data_val_6
 }
 
-format = "parquet"
 # Parcourir chaque paire table-DataFrame
 for table, df in tables_et_dfs.items():
-    print(table)
-    # Vérifier si la table existe
-    if spark.catalog.tableExists(table):
-        # Supprimer la table si elle existe
-        spark.sql(f"DROP TABLE IF EXISTS {table}")
-    # Créer la nouvelle table à partir du DataFrame
-    df.write.mode("overwrite").format(format).saveAsTable(table)
+    print(f"Création de la table {table}")
+    # Supprimer la table si elle existe
+    spark.sql(f"DROP TABLE IF EXISTS {table}")
+    
+    # Enregistrer la table dans la base de données spécifiée en spécifiant l'emplacement des partitions Parquet
+    df.write.mode("overwrite").saveAsTable(table)
 
+    print(f"La table {table} a été créé")
+
+# COMMAND ----------
+
+# # Chemin du répertoire de partitions Parquet à supprimer
+# chemin_partitions_parquet = "dbfs:/user/hive/warehouse/db_grp_2/prod/data_prod.parquet"
+
+# # Supprimer le répertoire de partitions Parquet et son contenu de manière récursive
+# dbutils.fs.rm(chemin_partitions_parquet, recurse=True)
+
+# # Vérifier que le répertoire de partitions Parquet a été supprimé
+# if not dbutils.fs.ls(chemin_partitions_parquet):
+#     print(f"Le répertoire de partitions Parquet {chemin_partitions_parquet} a été supprimé avec succès.")
+# else:
+#     print(f"La suppression du répertoire de partitions Parquet {chemin_partitions_parquet} a échoué.")
+
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC REFRESH TABLE data_prod
 
 # COMMAND ----------
 
@@ -112,10 +151,23 @@ test_val = spark.sql("SELECT * FROM data_val_prod")
 
 tables = spark.catalog.listTables()
 
-
 # Afficher les noms des tables
 for table in tables:
     print(table.name)
 # Supprimer chaque table
 #for table in tables:
   #  spark.sql(f"DROP TABLE {table.name}")
+
+# COMMAND ----------
+
+test = spark.read.table("db_grp_2.data_prod")
+test_val = spark.read.table("db_grp_2.data_val_prod")
+
+# COMMAND ----------
+
+test.display()
+test_val.display()
+
+# COMMAND ----------
+
+

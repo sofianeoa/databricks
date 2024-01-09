@@ -3,18 +3,18 @@ pip install xgboost
 
 # COMMAND ----------
 
+import pandas as pd
+import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import accuracy_score, classification_report
 from pyspark.sql.functions import col
-import pandas as pd
-import xgboost as xgb
 
 # COMMAND ----------
 
-data = spark.read.table("db_grp_2.data_prod")
-data_val = spark.read.table("db_grp_2.data_val_prod")
+data = spark.read.table("db_grp_2.data_prod_all")
+data_val = spark.read.table("db_grp_2.data_val_prod_all")
 
 # COMMAND ----------
 
@@ -36,6 +36,10 @@ X = data_pd.drop(columns=['etiquette_dpe'])
 
 y = data_pd['etiquette_dpe']
 
+
+# COMMAND ----------
+
+data_pd
 
 # COMMAND ----------
 
