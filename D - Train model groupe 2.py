@@ -70,6 +70,11 @@ print(f"Précision : {accuracy:.2f}")
 
 # COMMAND ----------
 
+# MAGIC %pip install mlflow
+# MAGIC
+
+# COMMAND ----------
+
 import mlflow
-mlflow.sklearn.log_model(model, "to_api", conda_env=conda_env, signature=signature, input_example=input_example)
+mlflow.sklearn.log_model(model, "to_api", conda_env="X_conda_env.yaml")
 
