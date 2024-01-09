@@ -67,3 +67,9 @@ y_pred = model.predict(X_test)
 # Mesurez la performance du modèle
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Précision : {accuracy:.2f}")
+
+# COMMAND ----------
+
+import mlflow
+mlflow.sklearn.log_model(model, "to_api", conda_env=conda_env, signature=signature, input_example=input_example)
+
